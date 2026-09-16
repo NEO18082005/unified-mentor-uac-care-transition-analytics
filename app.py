@@ -95,11 +95,16 @@ st.info(
 )
 
 cards = st.columns(6)
-cards[0].metric("CBP intake", f"{kpis['total_apprehended']:,}")
-cards[1].metric("Transferred to HHS", f"{kpis['total_transferred']:,}")
-cards[2].metric("HHS discharges", f"{kpis['total_discharged']:,}")
-cards[3].metric("Transfer efficiency", f"{kpis['transfer_ratio']:.1%}")
-cards[4].metric("Discharge effectiveness", f"{kpis['discharge_ratio']:.2%}")
+if mode == "Counts":
+    cards[0].metric("CBP intake", f"{kpis['total_apprehended']:,}")
+    cards[1].metric("Transferred to HHS", f"{kpis['total_transferred']:,}")
+    cards[2].metric("HHS discharges", f"{kpis['total_discharged']:,}")
+else:
+    cards[0].metric("Transfer efficiency", f"{kpis['transfer_ratio']:.1%}")
+    cards[1].metric("Discharge effectiveness", f"{kpis['discharge_ratio']:.2%}")
+    cards[2].metric("Pipeline throughput", f"{kpis['throughput']:.1%}")
+cards[3].metric("HHS stock change", f"{kpis['backlog_change']:+,.0f}")
+cards[4].metric("Average net HHS flow", f"{kpis['avg_net_hhs']:+,.1f}")
 cards[5].metric("Outcome stability", f"{kpis['stability']:.1f}/100")
 
 st.subheader("Threshold alerts")
