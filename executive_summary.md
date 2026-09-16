@@ -4,30 +4,31 @@
 
 ### Period covered
 
-October 9–December 21, 2025, across 49 reporting observations.
+January 12, 2023 through December 21, 2025, across 720 valid reporting observations.
 
 ### What the data shows
 
-The HHS care stock increased from 2,192 to 2,484 children, a rise of 292 children or 13.3%. Across the reporting observations, 357 children were recorded as apprehended, 495 were transferred out of CBP custody, and 462 were discharged from HHS care.
+The HHS care stock decreased from 6,566 to 2,484 children, a net decrease of 4,082 children or 62.2%. Across the reporting observations, 67,337 apprehensions, 92,641 transfers, and 124,853 discharges were reported.
 
-The weighted transfer efficiency ratio was 29.4%. The weighted discharge effectiveness ratio was 0.40%. The observed pipeline throughput ratio, defined as discharges divided by reported apprehensions, was 129.4%; this is a flow comparison rather than a cohort completion rate because the dataset does not link children across stages.
+The weighted transfer efficiency ratio was 75.03%. The weighted discharge effectiveness ratio was 2.86%. The reported discharge-to-apprehension throughput ratio was 185.42%. Because the source is an aggregate snapshot series without child-level linkage, throughput is a flow comparison and not a cohort completion rate.
 
 ### Main operational signals
 
-1. HHS-stage pressure accumulated overall. Transfers exceeded discharges by 33 across the observed rows, and 26 of 49 reporting observations had positive net HHS flow.
-2. The largest single reporting-day accumulation was November 23, when transfers exceeded discharges by 21.
-3. Transfer performance weakened across the three calendar months: the weighted ratio was 39.2% in October, 27.5% in November, and 22.8% in December.
-4. Discharges averaged 9.4 per reporting observation with a coefficient of variation of 0.42, producing an Outcome Stability Score of 58.5/100 under the defined method.
-5. Sunday reporting observations had the highest observed transfer ratio at 37.4% and the highest average net HHS flow at 3.9. This is an observed reporting-day pattern, not a causal weekday effect, because the sample is sparse and unbalanced.
+1. Transfer efficiency was 78.35% in 2023, 75.61% in 2024, and 50.41% in 2025.
+2. Discharge effectiveness was 3.33% in 2023, 2.92% in 2024, and 1.14% in 2025.
+3. Reported transfers exceeded discharges in 238 observations, while discharges exceeded transfers in 475 observations.
+4. The largest positive single-observation imbalance occurred on February 12, 2024, with 440 transfers and 234 discharges.
+5. Discharges averaged 173.4 per observation, ranging from 0 to 505. The project-defined Outcome Stability Score was 27.6/100.
+6. Reporting cadence is irregular, with 161 gaps longer than one day. Weekday comparisons should therefore be treated as descriptive only.
 
 ### Recommended actions
 
-- Review the November-to-December decline in transfer efficiency by separating operational capacity, transportation availability, screening completion, and reporting-timing factors.
-- Use a weekly exception queue for days where transfers exceed discharges and the HHS stock rises. Prioritize cases with aging, sponsor-readiness, or documentation blockers.
-- Track discharges against a stable denominator and add individual-level timestamps in the next data release so that true median time-to-transfer and time-to-placement can be measured.
-- Add facility, region, case type, and reason-for-delay fields to locate bottlenecks instead of treating the national aggregate as a single process.
-- Establish a recurring dashboard review using configurable alert floors for transfer efficiency, discharge effectiveness, backlog change, and outcome stability.
+- Use configurable thresholds to create a recurring exception queue for accumulation pressure and weak transition indicators.
+- Add timestamps for referral, transfer, HHS intake, sponsor approval, and discharge to measure actual transition time.
+- Add facility, region, case age, sponsor category, documentation status, and reason-for-delay fields.
+- Review 2025 rate changes alongside operations and reporting completeness before assigning a cause.
+- Treat flow ratios as monitoring signals until data owners confirm stock/flow definitions and cohort coverage.
 
 ### Data limitation
 
-This is an aggregate snapshot dataset with 49 non-daily observations. It supports directional monitoring and operational triage, but not individual-level causal analysis, cohort conversion rates, or precise service-time estimates.
+This project uses aggregate reporting observations, not linked child records. It supports directional monitoring and operational triage, but not individual-level causal analysis, cohort conversion rates, or precise time-to-placement estimates.

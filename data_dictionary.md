@@ -11,7 +11,8 @@
 
 ## Data quality notes
 
-- The source contains 49 reporting observations between October 9 and December 21, 2025.
+- The source contains 720 valid reporting observations between January 12, 2023 and December 21, 2025.
 - Reporting dates are not continuous daily observations.
+- The downloaded source includes blank trailing rows; the application removes rows without a reporting date before analysis.
 - The dataset contains aggregate counts and no child-level identifiers or timestamps.
 - Flows and stocks are not cohort-linked, so flow ratios are operational indicators rather than individual probabilities.

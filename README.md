@@ -7,7 +7,7 @@ CBP custody → HHS care → sponsor placement
 ## Included deliverables
 
 - `app.py` — interactive Streamlit dashboard
-- `data/HHS_Unaccompanied_Alien_Children_Program.csv` — cleaned source dataset extracted from the shared Drive file
+- `data/HHS_Unaccompanied_Alien_Children_Program.csv` — cleaned source dataset extracted from the shared Drive file (720 valid observations)
 - `analysis_report.md` — research-style EDA, findings, limitations, and recommendations
 - `executive_summary.md` — stakeholder-facing summary
 - `requirements.txt` — Python dependencies
@@ -28,7 +28,7 @@ streamlit run app.py
 3. Select **New app**, choose the repository, and set the main file to `app.py`.
 4. Click **Deploy**. Streamlit will install the dependencies from `requirements.txt`.
 
-The application does not require secrets, API keys, or external databases.
+The application does not require secrets, API keys, or external databases. The dashboard uses independent start-date and end-date controls so the calendar can navigate the full source period without the range-picker endpoint restriction.
 
 ## Quality checks
 
@@ -48,4 +48,4 @@ python -m pytest tests
 
 ## Important interpretation note
 
-The dataset contains aggregate reporting snapshots rather than individual child records. It has 49 observations from October 9 through December 21, 2025, with gaps between reporting dates. Cumulative flow totals should not be interpreted as a cohort-level conversion rate or as proof that the same children are represented in each stage.
+The dataset contains aggregate reporting snapshots rather than individual child records. It has 720 valid observations from January 12, 2023 through December 21, 2025, with gaps between reporting dates. Cumulative flow totals should not be interpreted as a cohort-level conversion rate or as proof that the same children are represented in each stage.

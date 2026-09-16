@@ -23,8 +23,13 @@ DISCHARGED = "Children discharged from HHS Care"
 @st.cache_data
 def load_data() -> pd.DataFrame:
     df = pd.read_csv(DATA_PATH, parse_dates=["Date"])
+    df = df.dropna(subset=["Date"]).copy()
     for col in [APPREHENDED, CBP_STOCK, TRANSFERRED, HHS_STOCK, DISCHARGED]:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
+        df[col] = pd.to_numeric(
+            df[col].astype("string").str.replace(",", "", regex=False),
+            errors="coerce",
+        )
+    df = df.dropna(subset=[APPREHENDED, CBP_STOCK, TRANSFERRED, HHS_STOCK, DISCHARGED])
     df = df.sort_values("Date").reset_index(drop=True)
     df["Net HHS flow"] = df[TRANSFERRED] - df[DISCHARGED]
     df["Transfer efficiency"] = df[TRANSFERRED].div(df[CBP_STOCK].replace(0, pd.NA))
@@ -62,46 +67,35 @@ def metric_label(value: float, mode: str, decimals: int = 1) -> str:
     return f"{value:.{decimals}%}" if mode == "Ratios" else f"{value:,.0f}"
 
 
-def normalize_date_range(selected_dates, fallback):
-    """Normalize Streamlit's date_input output during range selection.
-
-    A range date_input can briefly return one date while the user is choosing
-    the second endpoint.  Unpacking that transient value directly causes the
-    dashboard to fail with ``ValueError: not enough values to unpack``.
-    """
-    if isinstance(selected_dates, (tuple, list)):
-        dates = [value for value in selected_dates if value is not None]
-        if len(dates) >= 2:
-            start_date, end_date = dates[:2]
-        elif len(dates) == 1:
-            start_date = end_date = dates[0]
-        else:
-            return fallback
-    elif selected_dates is None:
-        return fallback
-    else:
-        start_date = end_date = selected_dates
-
-    if start_date > end_date:
-        start_date, end_date = end_date, start_date
-    return start_date, end_date
-
-
 df = load_data()
+data_min_date = df["Date"].min().date()
+data_max_date = df["Date"].max().date()
 st.title("Care Transition Efficiency & Placement Outcome Analytics")
-st.caption("UAC reporting observations | October 9–December 21, 2025")
+st.caption(
+    f"UAC reporting observations | {data_min_date:%B} {data_min_date.day}, {data_min_date.year} "
+    f"– {data_max_date:%B} {data_max_date.day}, {data_max_date.year}"
+)
 
 with st.sidebar:
     st.header("Controls")
-    min_date = df["Date"].min().date()
-    max_date = df["Date"].max().date()
-    raw_date_range = st.date_input(
-        "Reporting date range",
-        value=(min_date, max_date),
-        min_value=min_date,
-        max_value=max_date,
+    st.subheader("Reporting date range")
+    start_date = st.date_input(
+        "Start date",
+        value=data_min_date,
+        min_value=data_min_date,
+        max_value=data_max_date,
+        key="reporting_start_date",
     )
-    start_date, end_date = normalize_date_range(raw_date_range, (min_date, max_date))
+    end_date = st.date_input(
+        "End date",
+        value=data_max_date,
+        min_value=data_min_date,
+        max_value=data_max_date,
+        key="reporting_end_date",
+    )
+    if start_date > end_date:
+        st.warning("Start date is after the end date. The selected dates have been reordered.")
+        start_date, end_date = end_date, start_date
     mode = st.radio("Metric view", ["Counts", "Ratios"], index=0)
     st.divider()
     st.subheader("Alert thresholds")

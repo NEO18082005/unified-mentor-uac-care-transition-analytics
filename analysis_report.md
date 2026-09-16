@@ -1,24 +1,16 @@
 # Care Transition Efficiency & Placement Outcome Analytics
 
-## 1. Background
+## 1. Background and objective
 
-The UAC program is a multi-stage care and reunification pipeline. Children move from apprehension and CBP custody to HHS care, then to discharge and sponsor placement. Monitoring only the active stock can hide delays, uneven handoffs, and periods where inflows exceed successful exits.
+The Unaccompanied Alien Children (UAC) program is a multi-stage care and reunification pipeline. Children are referred from CBP, enter HHS/ORR care, receive screening and case-management services, and may then be released to a vetted sponsor. This study evaluates movement through that pipeline rather than looking only at the number of children in care.
 
-This analysis reframes the source data around process movement and backlog pressure.
+The objectives are to measure CBP-to-HHS transfer efficiency, evaluate discharge outcomes, identify periods of accumulation pressure, and provide an operational monitoring dashboard for stakeholders.
 
 ## 2. Data and preparation
 
-The source file is `HHS_Unaccompanied_Alien_Children_Program.csv`, shared through the provided [Google Drive link](https://drive.google.com/file/d/1xZo782T4EfnkC0BmCwJTb0DZYYHoOXKm/view?usp=sharing). It contains 49 reporting observations from October 9 through December 21, 2025.
+The source is the provided `HHS_Unaccompanied_Alien_Children_Program.csv` file. It contains 720 valid reporting observations from January 12, 2023 through December 21, 2025. The downloaded file is ordered newest to oldest and contains blank trailing rows. The analysis removes rows without a reporting date, parses dates, removes thousands separators from numeric fields, sorts observations chronologically, and validates the six expected fields.
 
-The dataset includes:
-
-- daily reported apprehensions placed in CBP custody;
-- children in CBP custody;
-- children transferred out of CBP custody;
-- children in HHS care; and
-- children discharged from HHS care.
-
-The date field was parsed as a calendar date and the numeric fields were converted to integers. Derived fields include transfer efficiency, discharge effectiveness, net HHS flow, month, and weekday.
+The source is an aggregate reporting series. It does not provide child-level identifiers, facility, geography, sponsor category, case age, or event timestamps. Consequently, the measures below are operational signals and not individual-level probabilities or time-to-placement estimates.
 
 ## 3. KPI definitions
 
@@ -26,81 +18,82 @@ The date field was parsed as a calendar date and the numeric fields were convert
 
 `Total transfers out of CBP custody ÷ total children in CBP custody`
 
-This is a weighted ratio across observations. It is a process signal, not an individual-level probability.
+This weighted ratio describes the observed transfer flow relative to the CBP custody stock.
 
 ### Discharge Effectiveness
 
 `Total discharges from HHS care ÷ total children in HHS care`
 
-The denominator is a stock measure, so this percentage should be interpreted as a stock-to-flow indicator.
+This is a stock-to-flow indicator. It should not be read as the probability that a particular child is discharged.
 
 ### Pipeline Throughput
 
 `Total HHS discharges ÷ total apprehensions reported`
 
-This ratio compares reported outflow and inflow. It is not a cohort completion rate because the source does not identify the same children across records.
+This compares aggregate reported outflow and inflow. It is not a cohort completion rate because records are not linked across stages.
 
-### Backlog Accumulation
+### Backlog Accumulation Signal
 
 `Transfers − discharges`
 
-Positive values indicate that more children entered HHS care through the reported transfer flow than exited through reported discharges in that observation.
+Positive values indicate that the reported transfer flow exceeded the reported discharge flow in that observation. The dashboard also reports the change in the HHS stock between the first and last selected observations.
 
 ### Outcome Stability Score
 
-`100 × (1 − coefficient of variation of daily discharges)`, bounded to 0–100.
+`100 × (1 − coefficient of variation of reported discharges)`, bounded to 0–100.
 
-Higher values indicate more consistent discharge volumes. This is a monitoring index created for this project, not an official HHS measure.
+This project-defined index summarizes consistency of discharge volume. It is not an official HHS measure. Higher values indicate more consistent reported discharge volumes.
 
 ## 4. Exploratory findings
 
-### System movement
+### Overall movement
 
-Across the 49 observations, reported apprehensions totaled 357, transfers totaled 495, and discharges totaled 462. The HHS care stock rose from 2,192 on October 9 to 2,484 on December 21, an increase of 292 children or 13.3%.
+Across the 720 observations, the source reports 67,337 apprehensions, 92,641 transfers, and 124,853 discharges. The weighted transfer efficiency ratio is 75.03%, the weighted discharge effectiveness ratio is 2.86%, and the flow-comparison throughput ratio is 185.42%.
 
-The net HHS flow was positive in 26 observations and negative in 23. The total positive imbalance across observations was 33 children. The largest positive single-observation imbalance occurred on November 23, when 22 transfers were reported against 1 discharge, a net increase of 21.
+The HHS care stock decreased from 6,566 on January 12, 2023 to 2,484 on December 21, 2025, a net decrease of 4,082 children or 62.2%. Reported transfers exceeded discharges in 238 observations and discharges exceeded transfers in 475 observations. The aggregate transfer-minus-discharge signal is −32,212, which is consistent with the long-run reduction in the observed HHS stock but should not be treated as a cohort reconciliation.
 
-### Transfer performance
+### Year-over-year pattern
 
-The weighted transfer efficiency ratio for the full period was 29.4%. Monthly performance declined from 39.2% in October to 27.5% in November and 22.8% in December.
+The weighted transfer ratio was 78.35% in 2023, 75.61% in 2024, and 50.41% in 2025. The weighted discharge effectiveness ratio was 3.33%, 2.92%, and 1.14%, respectively. These results show lower observed rates in 2025, although the 2025 period includes a transition in the underlying volumes and should be interpreted with the reporting coverage and stock levels in mind.
 
-The highest observed daily transfer ratio was 96.3% on October 23, with 26 transfers against 27 children in CBP custody. The lowest was 9.3% on December 10, with 5 transfers against 54 children in CBP custody. These extremes show why trend and threshold monitoring are more useful than relying on a single daily value.
+### Backlog and exception observations
 
-### Discharge performance
+The largest positive single-observation imbalance occurred on February 12, 2024, when 440 transfers and 234 discharges produced a net increase signal of 206. The largest negative imbalance occurred on January 11, 2024, when 11 transfers and 476 discharges produced a net decrease signal of 465.
 
-The weighted discharge effectiveness ratio was 0.40%. Discharges averaged 9.4 per reporting observation, with a population standard deviation of 3.9 and a coefficient of variation of 0.42. This produces an Outcome Stability Score of 58.5/100.
+Positive and negative daily signals alternate across the series, so a single high-pressure observation is not proof of a sustained backlog. The dashboard therefore combines daily bars with the HHS stock trend and user-defined alert thresholds.
 
-The highest reported discharge count was 19 on November 6. The lowest was 0 on November 30. The monthly weighted discharge effectiveness ratio was 0.47% in October, 0.36% in November, and 0.39% in December.
+### Discharge consistency
 
-### Weekday and weekend pattern
+Reported discharges averaged 173.4 per observation with a population standard deviation of 125.6. This gives an Outcome Stability Score of 27.6/100 under the project definition. The maximum discharge count was 505 on August 31, 2023, while the minimum was 0 on November 30, 2025. The wide range indicates that volume consistency is a meaningful monitoring concern.
 
-The data does not contain a balanced set of calendar days, so weekday comparisons are descriptive only. Sunday observations had the highest weighted transfer ratio at 37.4% and the highest average net HHS flow at +3.9. Thursday observations had the highest weighted discharge effectiveness at 0.51% and nearly balanced average net flow at +0.1.
+### Reporting cadence
+
+There are 161 gaps longer than one calendar day, and the largest gap is 10 days. Weekday comparisons are therefore descriptive and not a balanced experiment. Friday has only two observations, while Tuesday, Thursday, and Wednesday have substantially more. The dashboard does not claim that a weekday causes faster or slower transitions.
 
 ## 5. Bottleneck interpretation
 
-The primary bottleneck signal is accumulation in HHS care, not a sustained decline in every flow measure. HHS stock rose across the period even though the selected observation-level imbalance was relatively small. This suggests that the starting stock, earlier unobserved inflows, reporting gaps, or timing differences may contribute to the stock trend.
+The full-period series suggests that the principal operational question is not simply whether total discharges are large. The more useful questions are whether transfers keep pace with CBP custody, whether discharges are consistent relative to HHS stock, and whether high-pressure observations persist.
 
-The October-to-December decline in transfer efficiency is the clearest process warning. A falling transfer ratio alongside a rising HHS stock warrants investigation of CBP handoff capacity, transportation, screening completion, bed availability, and reporting cadence.
-
-Discharge volume is comparatively stable but low relative to the HHS stock. The stability score is moderate rather than strong because daily discharge counts range from 0 to 19.
+The lower 2025 transfer and discharge effectiveness ratios warrant investigation of changes in referral mix, reporting coverage, intake and screening capacity, transportation, sponsor documentation, and discharge processing. The available aggregate data cannot identify which mechanism caused the change. Facility-level and case-level fields are required for that conclusion.
 
 ## 6. Recommendations
 
-1. **Create a weekly exception workflow.** Flag reporting observations where net HHS flow is positive, transfer efficiency falls below the chosen floor, or discharge effectiveness falls below the chosen floor.
-2. **Decompose the handoff delay.** Add timestamps for apprehension, CBP transfer decision, physical transfer, HHS intake, sponsor approval, and discharge.
-3. **Measure aging directly.** Add case-age bands and median/90th percentile days in CBP and HHS care.
-4. **Segment bottlenecks.** Add location, facility, transfer reason, sponsor readiness, and documentation status.
-5. **Review December deterioration.** Compare operational staffing, transport availability, holidays, screening demand, and reporting completeness with October and November.
-6. **Use the dashboard as a monitoring layer.** Keep the threshold controls configurable and document any policy floors used by stakeholders.
+1. Use the dashboard thresholds to create a weekly exception queue for positive net HHS flow, low transfer efficiency, low discharge effectiveness, or low stability.
+2. Add event timestamps for referral, CBP transfer decision, physical transfer, HHS intake, sponsor approval, and discharge to measure median and 90th-percentile transition time.
+3. Add case-age bands, facility, region, sponsor category, documentation status, and reason-for-delay fields to locate bottlenecks.
+4. Review the 2025 rate changes alongside operational staffing, transportation, screening demand, reporting completeness, and policy changes.
+5. Reconcile stock and flow definitions with data owners before using any ratio as an official performance target.
+6. Refresh the dashboard from the official HHS data source on a defined schedule and record the extraction date in each published analysis.
 
 ## 7. Limitations
 
-- The dataset contains aggregate observations rather than individual child records.
-- Reporting dates are not daily; gaps prevent reliable calendar-day rate calculations.
-- The source does not identify whether a transfer and discharge refer to the same children.
-- Stock measures and flow measures use different units of observation, so ratios are operational indicators rather than precise probabilities.
-- No facility, geography, case-mix, sponsor, or reason-for-delay fields are available.
+- The data is aggregate and not child-level.
+- Reporting dates are irregular, so calendar-day and weekday comparisons are unbalanced.
+- Transfers and discharges are not linked to the same children.
+- Stock and flow measures have different meanings and denominators.
+- The project-defined stability score is a monitoring index, not an official program KPI.
+- No causal claim about sponsor vetting, facility performance, or staffing can be made from this file alone.
 
 ## 8. Conclusion
 
-The period shows a growing HHS care stock, declining transfer efficiency, and moderate variability in discharge performance. The dashboard operationalizes these signals with date filters, ratio/count toggles, bottleneck charts, and threshold alerts. The next analytical step should be to add individual-level timestamps and segmentation fields so the program can move from directional monitoring to measured transition-time improvement.
+The complete source covers January 2023 through December 2025 and shows a substantial reduction in observed HHS care stock, high aggregate transfer and discharge flows relative to the later-period stock levels, and low consistency in discharge volume. The Streamlit dashboard turns these signals into an interactive monitoring layer with independent start and end date controls, count/ratio KPI views, threshold alerts, flow visualization, trend charts, and bottleneck detail. The next improvement should be a timestamped, case-level data model that can measure actual time to transfer and safe sponsor release.
