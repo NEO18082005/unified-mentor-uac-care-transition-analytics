@@ -21,7 +21,8 @@ DISCHARGED = "Children discharged from HHS Care"
 
 
 @st.cache_data
-def load_data() -> pd.DataFrame:
+def load_data(file_version: tuple[int, int]) -> pd.DataFrame:
+    """Load and normalize the source file, refreshing when it changes."""
     df = pd.read_csv(DATA_PATH, parse_dates=["Date"])
     df = df.dropna(subset=["Date"]).copy()
     for col in [APPREHENDED, CBP_STOCK, TRANSFERRED, HHS_STOCK, DISCHARGED]:
@@ -67,7 +68,8 @@ def metric_label(value: float, mode: str, decimals: int = 1) -> str:
     return f"{value:.{decimals}%}" if mode == "Ratios" else f"{value:,.0f}"
 
 
-df = load_data()
+data_stat = DATA_PATH.stat()
+df = load_data((data_stat.st_mtime_ns, data_stat.st_size))
 data_min_date = df["Date"].min().date()
 data_max_date = df["Date"].max().date()
 st.title("Care Transition Efficiency & Placement Outcome Analytics")
