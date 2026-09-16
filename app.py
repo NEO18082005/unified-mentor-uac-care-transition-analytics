@@ -78,7 +78,7 @@ with st.sidebar:
     st.divider()
     st.subheader("Alert thresholds")
     transfer_alert = st.slider("Transfer efficiency floor", 0.0, 1.0, 0.25, 0.01)
-    discharge_alert = st.slider("Discharge effectiveness floor", 0.0, 0.02, 0.005, 0.001, format="%.1%%")
+    discharge_alert = st.slider("Discharge effectiveness floor", 0.0, 0.02, 0.005, 0.001, format="%.1f%%")
     backlog_alert = st.number_input("Backlog change alert", min_value=0, value=0, step=10)
     stability_alert = st.slider("Outcome stability floor", 0, 100, 70, 5)
 
