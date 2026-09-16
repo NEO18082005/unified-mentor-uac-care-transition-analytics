@@ -62,18 +62,46 @@ def metric_label(value: float, mode: str, decimals: int = 1) -> str:
     return f"{value:.{decimals}%}" if mode == "Ratios" else f"{value:,.0f}"
 
 
+def normalize_date_range(selected_dates, fallback):
+    """Normalize Streamlit's date_input output during range selection.
+
+    A range date_input can briefly return one date while the user is choosing
+    the second endpoint.  Unpacking that transient value directly causes the
+    dashboard to fail with ``ValueError: not enough values to unpack``.
+    """
+    if isinstance(selected_dates, (tuple, list)):
+        dates = [value for value in selected_dates if value is not None]
+        if len(dates) >= 2:
+            start_date, end_date = dates[:2]
+        elif len(dates) == 1:
+            start_date = end_date = dates[0]
+        else:
+            return fallback
+    elif selected_dates is None:
+        return fallback
+    else:
+        start_date = end_date = selected_dates
+
+    if start_date > end_date:
+        start_date, end_date = end_date, start_date
+    return start_date, end_date
+
+
 df = load_data()
 st.title("Care Transition Efficiency & Placement Outcome Analytics")
 st.caption("UAC reporting observations | October 9–December 21, 2025")
 
 with st.sidebar:
     st.header("Controls")
-    start_date, end_date = st.date_input(
+    min_date = df["Date"].min().date()
+    max_date = df["Date"].max().date()
+    raw_date_range = st.date_input(
         "Reporting date range",
-        value=(df["Date"].min().date(), df["Date"].max().date()),
-        min_value=df["Date"].min().date(),
-        max_value=df["Date"].max().date(),
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date,
     )
+    start_date, end_date = normalize_date_range(raw_date_range, (min_date, max_date))
     mode = st.radio("Metric view", ["Counts", "Ratios"], index=0)
     st.divider()
     st.subheader("Alert thresholds")
