@@ -162,7 +162,7 @@ with left:
         )
     )
     sankey.update_layout(height=360, margin=dict(l=10, r=10, t=10, b=10))
-    st.plotly_chart(sankey, use_container_width=True)
+    st.plotly_chart(sankey, width="stretch")
     st.caption("Flow widths show cumulative reported movements in the selected observations; they are not a cohort reconciliation.")
 
 with right:
@@ -171,7 +171,7 @@ with right:
     loads["Stage"] = loads["Stage"].replace({CBP_STOCK: "CBP custody", HHS_STOCK: "HHS care"})
     fig_loads = px.line(loads, x="Date", y="Children", color="Stage", markers=True, color_discrete_sequence=["#F59E0B", "#2563EB"])
     fig_loads.update_layout(height=360, legend_title_text="", margin=dict(l=10, r=10, t=10, b=10))
-    st.plotly_chart(fig_loads, use_container_width=True)
+    st.plotly_chart(fig_loads, width="stretch")
 
 left, right = st.columns(2)
 with left:
@@ -183,7 +183,7 @@ with left:
     fig_ratios.add_hline(y=discharge_alert, line_dash="dash", line_color="#059669", annotation_text="Discharge floor")
     fig_ratios.update_yaxes(tickformat=".1%")
     fig_ratios.update_layout(height=380, legend_title_text="", margin=dict(l=10, r=10, t=10, b=10))
-    st.plotly_chart(fig_ratios, use_container_width=True)
+    st.plotly_chart(fig_ratios, width="stretch")
 
 with right:
     st.subheader("Backlog pressure")
@@ -192,7 +192,7 @@ with right:
     fig_backlog = px.bar(backlog, x="Date", y="Net HHS flow", color="Signal", color_discrete_map={"Accumulating": "#DC2626", "Reducing": "#16A34A"})
     fig_backlog.add_hline(y=0, line_color="#111827")
     fig_backlog.update_layout(height=380, xaxis_title="", yaxis_title="Transfers − discharges", legend_title_text="", margin=dict(l=10, r=10, t=10, b=10))
-    st.plotly_chart(fig_backlog, use_container_width=True)
+    st.plotly_chart(fig_backlog, width="stretch")
 
 st.subheader("Monthly outcome trend")
 monthly = selected.groupby("Month", as_index=False).agg(
@@ -208,7 +208,7 @@ monthly["net_hhs_flow"] = monthly["transferred"] - monthly["discharged"]
 trend = monthly.melt("Month", value_vars=["transferred", "discharged"], var_name="Flow", value_name="Children")
 fig_monthly = px.bar(trend, x="Month", y="Children", color="Flow", barmode="group", color_discrete_sequence=["#2563EB", "#059669"])
 fig_monthly.update_layout(height=360, legend_title_text="", margin=dict(l=10, r=10, t=10, b=10))
-st.plotly_chart(fig_monthly, use_container_width=True)
+st.plotly_chart(fig_monthly, width="stretch")
 
 st.subheader("Bottleneck detail")
 detail = selected[["Date", CBP_STOCK, TRANSFERRED, HHS_STOCK, DISCHARGED, "Net HHS flow", "Transfer efficiency", "Discharge effectiveness"]].copy()
@@ -219,7 +219,7 @@ detail["Risk"] = detail.apply(
 detail = detail.sort_values(["Risk", "Net HHS flow"], ascending=[True, False])
 st.dataframe(
     detail.style.format({"Transfer efficiency": "{:.1%}", "Discharge effectiveness": "{:.2%}", "Net HHS flow": "{:+,.0f}"}),
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
